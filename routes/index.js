@@ -35,7 +35,7 @@ module.exports = function () {
   router.put("/personas/:id", personaController.actualizarPersonaPorId); //Actualizar por ID
   router.post("/signin", usuariosController.registrarUsuario); //iniciar
   router.post("/login", usuariosController.autenticarUsuario);
-  router.get("/usuarios", auth, usuariosController.obtenerUsuarios);
+  router.get("/usuarios", /*auth,*/ usuariosController.obtenerUsuarios);
   router.get("/usuarios/inactivos", auth, usuariosController.obtenerUsuariosI);
   router.put(
     "/usuarios/:id",
