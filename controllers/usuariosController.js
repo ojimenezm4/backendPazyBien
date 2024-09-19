@@ -128,21 +128,28 @@ exports.actualizarUsuario = async (req, res) => {
 // Controlador para marcar un usuario como inactivo
 exports.eliminarUsuario = async (req, res) => {
   const { id } = req.params;
+  const usuarioSesion = req.usuario; // Usuario en sesión obtenido del token
+
+  if (usuarioSesion.id === id) {
+    return res.status(403).json({ mensaje: "No se puede eliminar el usuario que está en sesión." });
+  }
+
+  // Continúa con la eliminación si el usuario no es el mismo que está en sesión
   try {
-    const usuarioInactivo = await Usuarios.findByIdAndUpdate(
-      id,
-      { activo: false },
-      { new: true }
-    );
+    const usuarioInactivo = await Usuarios.findByIdAndUpdate(id, { activo: false }, { new: true });
     if (!usuarioInactivo) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
     res.json({ mensaje: "Usuario marcado como inactivo correctamente" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ mensaje: "Hubo un error" });
+    res.status(500).json({ mensaje: "Hubo un error al intentar inactivar el usuario", error: error.message });
   }
 };
+
+
+
+
+
 
 exports.autenticarUsuario = async (req, res, next) => {
   const { email, password } = req.body;
@@ -204,3 +211,4 @@ exports.obtenerUsuario = async (req, res) => {
     res.status(500).json({ mensaje: "Hubo un error" });
   }
 };
+

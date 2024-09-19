@@ -1,10 +1,11 @@
+const jwt = require('jsonwebtoken');
+
 module.exports = (rolesPermitidos) => {
   return (req, res, next) => {
     const authHeader = req.get("Authorization");
     if (!authHeader) {
-      const error = new Error("No autenticado, no hay JWT");
-      error.statusCode = 401;
-      throw error;
+      res.status(401).json({ message: "No autenticado, no hay JWT", statusCode: 401 });
+      return;
     }
 
     const token = authHeader.split(" ")[1];
@@ -12,22 +13,21 @@ module.exports = (rolesPermitidos) => {
     try {
       revisarToken = jwt.verify(token, "LLAVESECRETA");
     } catch (error) {
-      error.statusCode = 500;
-      throw error;
+      res.status(500).json({ message: error.message, statusCode: 500 });
+      return;
     }
 
     if (!revisarToken) {
-      const error = new Error("No autenticado");
-      error.statusCode = 401;
-      throw error;
+      res.status(401).json({ message: "No autenticado", statusCode: 401 });
+      return;
     }
 
     if (!rolesPermitidos.includes(revisarToken.rol)) {
-      const error = new Error("No tienes autorización para hacer esto");
-      error.statusCode = 403;
-      throw error;
+      res.status(403).json({ message: "No tienes autorización para hacer esto", statusCode: 403 });
+      return;
     }
 
+    req.usuario = revisarToken;  // Pasamos el usuario verificado a la request
     next();
   };
 };

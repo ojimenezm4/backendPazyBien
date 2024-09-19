@@ -37,6 +37,7 @@ module.exports = function () {
   router.post("/login", usuariosController.autenticarUsuario);
   router.get("/usuarios", /*auth,*/ usuariosController.obtenerUsuarios);
   router.get("/usuarios/inactivos", auth, usuariosController.obtenerUsuariosI);
+  //router.put("/usuarios/:id", usuariosController.editarUsuario);
   router.put(
     "/usuarios/:id",
     upload.single("fotoPerfil"),
